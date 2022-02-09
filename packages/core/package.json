@@ -1,6 +1,6 @@
 {
   "name": "@dev-cli/core",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "dev-cli core",
   "keywords": [
     "cli"
@@ -25,7 +25,7 @@
     "test": "echo \"run tests from core"
   },
   "dependencies": {
-    "@dev-cli/utils": "^0.0.3"
+    "@dev-cli/utils": "^0.0.4"
   },
   "gitHead": "78042f43bdadf1ef873e518de2410f336af5ba3c"
 }
