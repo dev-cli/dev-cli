@@ -19,7 +19,7 @@
     "dev-cli": "./lib/index.js"
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.com/"
+    "access": "public"
   },
   "scripts": {
     "test": "echo \"run tests from core"
@@ -27,5 +27,5 @@
   "dependencies": {
     "@dev-cli/utils": "^0.0.4"
   },
-  "gitHead": "78042f43bdadf1ef873e518de2410f336af5ba3c"
+  "gitHead": "6155c647688673a9352741f3ecc279d16d56df11"
 }
