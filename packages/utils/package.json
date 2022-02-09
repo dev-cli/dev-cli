@@ -1,8 +1,8 @@
 {
   "name": "@dev-cli/utils",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "dev-cli utils",
-  "author": "shibin <2263337973@qq.com>",
+  "author": "shibin",
   "homepage": "",
   "license": "MIT",
   "main": "lib/index.js",
@@ -18,5 +18,6 @@
   },
   "scripts": {
     "test": "echo \"run tests from utils"
-  }
+  },
+  "gitHead": "cbe0d64e799f05287c50e3403cced90694e95551"
 }

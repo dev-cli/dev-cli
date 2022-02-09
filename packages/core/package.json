@@ -1,6 +1,6 @@
 {
   "name": "@dev-cli/core",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "dev-cli core",
   "keywords": [
     "cli"
@@ -26,5 +26,6 @@
   },
   "dependencies": {
     "@dev-cli/utils": "^0.0.1"
-  }
+  },
+  "gitHead": "cbe0d64e799f05287c50e3403cced90694e95551"
 }
