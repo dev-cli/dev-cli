@@ -16,7 +16,7 @@
     "lib"
   ],
   "bin": {
-    "dev-cli": "./lib/index.js"
+    "dev": "./lib/index.js"
   },
   "publishConfig": {
     "access": "public"
@@ -25,7 +25,9 @@
     "test": "echo \"run tests from core"
   },
   "dependencies": {
-    "@dev-cli/utils": "^0.0.5"
+    "@dev-cli/utils": "^0.0.5",
+    "dedent": "^0.7.0",
+    "yargs": "^17.3.1"
   },
   "gitHead": "6155c647688673a9352741f3ecc279d16d56df11"
 }
