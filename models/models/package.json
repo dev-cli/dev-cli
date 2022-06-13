@@ -1,0 +1,29 @@
+{
+  "name": "@dev-cli/models",
+  "version": "0.0.6",
+  "description": "> TODO: description",
+  "author": "shibin <shibiny6@gmail.com>",
+  "homepage": "https://github.com/dev-cli/dev-cli#readme",
+  "license": "MIT",
+  "main": "lib/models.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dev-cli/dev-cli.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/dev-cli/dev-cli/issues"
+  }
+}
