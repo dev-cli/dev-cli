@@ -1,6 +1,6 @@
 'use strict';
 const axios = require('axios')
-const semver = require('semver')
+// const semver = require('semver')
 
 
 let request
@@ -39,7 +39,7 @@ async function getNpmInfo(pkgName, registry) {
 //     }
 //     return null
 // }
-async function getSemverVersion2(pkgName, currentVersion, registry) {
+async function getSemverVersion(pkgName, currentVersion, registry) {
     const info = await getNpmInfo(pkgName, registry)
     if(info['dist-tags'] && info['dist-tags'].latest){
         return info['dist-tags'].latest
@@ -54,5 +54,5 @@ module.exports = {
     getNpmInfo,
     // getNpmVersions,
     // getSemverVersion,
-    getSemverVersion2
+    getSemverVersion
 }

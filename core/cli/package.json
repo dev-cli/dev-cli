@@ -6,7 +6,7 @@
   "homepage": "https://github.com/dev-cli/dev-cli#readme",
   "license": "MIT",
   "bin": {
-    "dev": "./bin/index.js"
+    "dev": "./bin/dev.js"
   },
   "main": "lib/index.js",
   "directories": {
@@ -33,6 +33,7 @@
     "@dev-cli/get-npm-info": "file:../../utils/get-npm-info",
     "@dev-cli/log": "file:../../utils/log",
     "colors": "^1.4.0",
+    "commander": "^9.3.0",
     "dotenv": "^16.0.1",
     "import-local": "^3.1.0",
     "minimist": "^1.2.6",

@@ -1,4 +1,3 @@
-'use strict';
 const semver = require('semver')
 const colors = require('colors')
 const { homedir } = require('os')
@@ -11,7 +10,7 @@ const constant = require('./const')
 let args
 let userHome
 let config
-function core() {
+async function core() {
     try {
         checkPkgVersion()
         checkNodeVersion()
@@ -19,7 +18,8 @@ function core() {
         checkUserHome()
         checkInputArgs()
         checkEvn()
-        checkGlobalUpdate()
+        await checkGlobalUpdate()
+        registerCommand()
     } catch (e) {
         log.error(e.message)
     }
@@ -57,7 +57,7 @@ function checkArgs() {
     } else {
         process.env.LOG_LEVER = 'info'
     }
-    log.level = process.LOG_LEVER
+    log.level = process.env.LOG_LEVER
 }
 
 async function checkEvn() {
@@ -72,6 +72,7 @@ async function checkEvn() {
 
     log.verbose('环境变量', config)
 }
+
 function createDefaultConfig() {
     const cliConfig = {
         home: userHome
@@ -88,11 +89,47 @@ function createDefaultConfig() {
 async function checkGlobalUpdate() {
     const currentVersion = pkg.version
     const pkgName = pkg.name
-    const { getSemverVersion2 } = require('@dev-cli/get-npm-info')
-    const lastVersion = await getSemverVersion2(pkgName, currentVersion)
-    console.log(lastVersion)
-    if(lastVersion && semver.gt(lastVersion, currentVersion)){
-        log.warn(colors.yellow(`请手动更新 ${pkgName}, 当前版本是: ${currentVersion}, 当前版本是: ${lastVersion}, 更新命令：npm install -g ${pkgName}`))
+    const { getSemverVersion } = require('@dev-cli/get-npm-info')
+    const lastVersion = await getSemverVersion(pkgName, currentVersion)
+    if (lastVersion && semver.gt(lastVersion, currentVersion)) {
+        log.warn(colors.yellow(`请手动更新 ${pkgName}, 当前版本是: ${currentVersion}, 最新版本是: ${lastVersion}, 更新命令：npm install -g ${pkgName}`))
     }
+}
+
+function registerCommand() {
+    const { Command } = require('commander')
+    const program = new Command()
+    program
+        .name('dev')
+        .usage('<command> [options]')
+        .option('-d, --debug', '是否开启调试模式', false)
+        .option('-e, --env <envName>', '获取环境变量名称')
+        .version(pkg.version, '-V, --version', '获取当前版本号')
+        .helpOption('-h, --help', '获取帮助信息');
+
+    program.command('clone <source> [destination]')
+        .description('克隆一个仓库')
+        .option('-f, --force', '是否强制克隆')
+        .action((source, destination, cloneOpt) => {
+            console.log('do clone')
+            console.log(source, destination, c, cloneOpt)
+        })
+
+
+    const service = new Command('service')
+    service.command('start [port]')
+        .description('根据 port 启动服务')
+        .action(port => {
+            console.log(`service start at http://localhost:${port || 8080}`)
+        })
+    service.command('stop', '停止服务')
+        // .description('停止服务')
+        .action(() => {
+            console.log('停止服务 ')
+        })
+    program.addCommand(service)
+
+    program.parse()
+    console.log(program.opts())
 }
 module.exports = core;
