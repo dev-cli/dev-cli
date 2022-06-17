@@ -105,7 +105,7 @@ function registerCommand() {
         .option('-d, --debug', '是否开启调试模式', false)
         .option('-e, --env <envName>', '获取环境变量名称')
         .version(pkg.version, '-V, --version', '获取当前版本号')
-        .helpOption('-h, --help', '获取帮助信息');
+        .helpOption('-h, --help', '获取帮助信息')
 
     program.command('clone <source> [destination]')
         .description('克隆一个仓库')
@@ -129,7 +129,13 @@ function registerCommand() {
         })
     program.addCommand(service)
 
+
+    program.arguments('<command> [option]')
+        .description('command zs',)
+        .action((cmd, env) => {
+            console.log(cmd, env)
+        })
     program.parse()
-    console.log(program.opts())
+    // console.log(program.opts())
 }
 module.exports = core;
