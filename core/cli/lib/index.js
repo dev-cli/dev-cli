@@ -129,9 +129,16 @@ function registerCommand() {
         })
     program.addCommand(service)
 
+    program.command('install [name]', 'install package', {
+        // executableFile: 'dev1-install',
+        // isDefault: true,
+        // hidden: true
+    })
+        .alias('i')
 
-    program.arguments('<command> [option]')
-        .description('command zs',)
+    program
+        .argument('<command>', 'command to run')
+        .argument('[option]', 'options for command')
         .action((cmd, env) => {
             console.log(cmd, env)
         })
