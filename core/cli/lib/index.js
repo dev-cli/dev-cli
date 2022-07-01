@@ -136,13 +136,28 @@ function registerCommand() {
     })
         .alias('i')
 
-    program
-        .argument('<command>', 'command to run')
-        .argument('[option]', 'options for command')
-        .action((cmd, env) => {
-            console.log(cmd, env)
-        })
+    // program
+    //     .argument('<command>', 'command to run')
+    //     .argument('[option]', 'options for command')
+    //     .action((cmd, env) => {
+    //         console.log(cmd, env)
+    //     })
+
+    program.helpInformation = () => '123'
+    program.on('--help', function () {
+        console.log('help information')
+    })
+    program.on('option:debug', function () {
+        console.log('debug', this.opts().debug)
+    })
+    // 未知命令监听
+    program.on('command:*', function (obj) {
+        console.log('未知的命令'+ obj[0])
+        const availableCommands = program.commands.map(cmd => cmd.name())
+        console.log('可用的命令',availableCommands.join(', '))
+    })
     program.parse()
     // console.log(program.opts())
+
 }
 module.exports = core;
