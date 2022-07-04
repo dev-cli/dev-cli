@@ -6,6 +6,7 @@ const log = require('@dev-cli/log')
 const path = require('path')
 const pkg = require('../package.json')
 const constant = require('./const')
+const init = require('@dev-cli/init')
 
 let args
 let userHome
@@ -16,7 +17,7 @@ async function core() {
         checkNodeVersion()
         checkRoot()
         checkUserHome()
-        checkInputArgs()
+        // checkInputArgs()
         checkEvn()
         await checkGlobalUpdate()
         registerCommand()
@@ -90,9 +91,12 @@ async function checkGlobalUpdate() {
     const currentVersion = pkg.version
     const pkgName = pkg.name
     const { getSemverVersion } = require('@dev-cli/get-npm-info')
-    const lastVersion = await getSemverVersion(pkgName, currentVersion)
-    if (lastVersion && semver.gt(lastVersion, currentVersion)) {
-        log.warn(colors.yellow(`请手动更新 ${pkgName}, 当前版本是: ${currentVersion}, 最新版本是: ${lastVersion}, 更新命令：npm install -g ${pkgName}`))
+    try {
+        const lastVersion = await getSemverVersion(pkgName, currentVersion)
+        if (lastVersion && semver.gt(lastVersion, currentVersion)) {
+            log.warn(colors.yellow(`请手动更新 ${pkgName}, 当前版本是: ${currentVersion}, 最新版本是: ${lastVersion}, 更新命令：npm install -g ${pkgName}`))
+        }
+    } catch (e) {
     }
 }
 
@@ -107,57 +111,33 @@ function registerCommand() {
         .version(pkg.version, '-V, --version', '获取当前版本号')
         .helpOption('-h, --help', '获取帮助信息')
 
-    program.command('clone <source> [destination]')
-        .description('克隆一个仓库')
-        .option('-f, --force', '是否强制克隆')
-        .action((source, destination, cloneOpt) => {
-            console.log('do clone')
-            console.log(source, destination, c, cloneOpt)
-        })
 
+    program.command('init [name]')
+        .option('-f, --force', '是否强制初始化项目' )
+        .action(init)
 
-    const service = new Command('service')
-    service.command('start [port]')
-        .description('根据 port 启动服务')
-        .action(port => {
-            console.log(`service start at http://localhost:${port || 8080}`)
-        })
-    service.command('stop', '停止服务')
-        // .description('停止服务')
-        .action(() => {
-            console.log('停止服务 ')
-        })
-    program.addCommand(service)
-
-    program.command('install [name]', 'install package', {
-        // executableFile: 'dev1-install',
-        // isDefault: true,
-        // hidden: true
-    })
-        .alias('i')
-
-    // program
-    //     .argument('<command>', 'command to run')
-    //     .argument('[option]', 'options for command')
-    //     .action((cmd, env) => {
-    //         console.log(cmd, env)
-    //     })
-
-    program.helpInformation = () => '123'
-    program.on('--help', function () {
-        console.log('help information')
-    })
     program.on('option:debug', function () {
         console.log('debug', this.opts().debug)
+        if (this.opts().debug) {
+            process.env.LOG_LEVER = 'verbose'
+        } else {
+            process.env.LOG_LEVER = 'info'
+        }
+        log.level = process.env.LOG_LEVER
+        log.verbose('dess')
     })
-    // 未知命令监听
+    // eeee监听
     program.on('command:*', function (obj) {
-        console.log('未知的命令'+ obj[0])
+        log.error('未知的命令' + obj[0])
         const availableCommands = program.commands.map(cmd => cmd.name())
-        console.log('可用的命令',availableCommands.join(', '))
+        console.log('可用的命令', availableCommands.join(', '))
     })
-    program.parse()
-    // console.log(program.opts())
+    // console.log(program.args)
 
+    program.parse()
+    if (program.args && program.args.length < 1) {
+        program.outputHelp()
+        console.log()
+    }
 }
 module.exports = core;

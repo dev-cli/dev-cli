@@ -1,11 +1,11 @@
-# `command`
+# `@dev-cli/init`
 
 > TODO: description
 
 ## Usage
 
 ```
-const command = require('command');
+const init = require('@dev-cli/init');
 
 // TODO: DEMONSTRATE API
 ```
