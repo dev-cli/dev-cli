@@ -1,13 +1,10 @@
 {
-  "name": "@dev-cli/core",
+  "name": "@dev-cli/package",
   "version": "0.0.11",
   "description": "> TODO: description",
-  "author": "shibin",
+  "author": "shibin <shibiny6@gmail.com>",
   "homepage": "https://github.com/dev-cli/dev-cli#readme",
   "license": "MIT",
-  "bin": {
-    "dev": "./bin/dev.js"
-  },
   "main": "lib/index.js",
   "directories": {
     "lib": "lib",
@@ -26,21 +23,13 @@
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
+  "dependencies": {
+    "@dev-cli/log": "file:../../utils/log",
+    "@dev-cli/utils": "file:../../utils/utils",
+    "npminstall": "^6.5.0",
+    "pkg-dir": "^5.0.0"
+  },
   "bugs": {
     "url": "https://github.com/dev-cli/dev-cli/issues"
-  },
-  "dependencies": {
-    "@dev-cli/exec": "file:../exec",
-    "@dev-cli/get-npm-info": "file:../../utils/get-npm-info",
-    "@dev-cli/init": "file:../../command/init",
-    "@dev-cli/log": "file:../../utils/log",
-    "colors": "^1.4.0",
-    "commander": "^9.3.0",
-    "dotenv": "^16.0.1",
-    "import-local": "^3.1.0",
-    "path-exists": "^4.0.0",
-    "root-check": "1",
-    "semver": "^7.3.7"
-  },
-  "gitHead": "61b41c4654912e752957ba85517d8a9201a8de0f"
+  }
 }

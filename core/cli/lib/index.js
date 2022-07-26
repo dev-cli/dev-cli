@@ -7,23 +7,26 @@ const path = require('path')
 const pkg = require('../package.json')
 const constant = require('./const')
 const init = require('@dev-cli/init')
+const exec = require('@dev-cli/exec')
 
-let args
+// let args
 let userHome
 let config
 async function core() {
-    try {
-        checkPkgVersion()
-        checkNodeVersion()
-        checkRoot()
-        checkUserHome()
-        // checkInputArgs()
-        checkEvn()
-        await checkGlobalUpdate()
+    try { 
+        await prepare()
         registerCommand()
     } catch (e) {
         log.error(e.message)
     }
+}
+async function prepare() {
+    checkPkgVersion()
+    checkNodeVersion()
+    checkRoot()
+    checkUserHome()
+    checkEvn()
+    await checkGlobalUpdate()
 }
 function checkPkgVersion() {
     log.notice('dev-cli', pkg.version)
@@ -47,26 +50,26 @@ async function checkUserHome() {
     }
 }
 
-function checkInputArgs() {
-    const minimist = require('minimist')
-    args = minimist(process.argv.slice(2))
-    checkArgs()
-}
-function checkArgs() {
-    if (args.debug) {
-        process.env.LOG_LEVER = 'verbose'
-    } else {
-        process.env.LOG_LEVER = 'info'
-    }
-    log.level = process.env.LOG_LEVER
-}
+// function checkInputArgs() {
+//     const minimist = require('minimist')
+//     args = minimist(process.argv.slice(2))
+//     checkArgs()
+// }
+// function checkArgs() {
+//     if (args.debug) {
+//         process.env.LOG_LEVER = 'verbose'
+//     } else {
+//         process.env.LOG_LEVER = 'info'
+//     }
+//     log.level = process.env.LOG_LEVER
+// }
 
 async function checkEvn() {
     const dotenv = require('dotenv')
     const dotenvPath = path.resolve(userHome, '.env')
     if (await pathExists(dotenvPath)) {
         dotenv.config({
-            path: dotenvPath
+            path: dotenvPath 
         })
     }
     config = createDefaultConfig()
@@ -110,11 +113,16 @@ function registerCommand() {
         .option('-e, --env <envName>', '获取环境变量名称')
         .version(pkg.version, '-V, --version', '获取当前版本号')
         .helpOption('-h, --help', '获取帮助信息')
+        .option('-tp,--targetPath <targetPath>', '指定的本地文件调试路径')
 
-
+    program.on('option:targetPath', function () {
+        if (this.opts().targetPath) {
+            process.env.CLI_TARGET_PATH = this.opts().targetPath
+        }
+    })
     program.command('init [name]')
-        .option('-f, --force', '是否强制初始化项目' )
-        .action(init)
+        .option('-f, --force', '是否强制初始化项目')
+        .action(exec)
 
     program.on('option:debug', function () {
         console.log('debug', this.opts().debug)
@@ -141,3 +149,4 @@ function registerCommand() {
     }
 }
 module.exports = core;
+ 
