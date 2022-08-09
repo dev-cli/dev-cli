@@ -30,10 +30,10 @@
     "url": "https://github.com/dev-cli/dev-cli/issues"
   },
   "dependencies": {
-    "@dev-cli/exec": "file:../exec",
-    "@dev-cli/get-npm-info": "file:../../utils/get-npm-info",
-    "@dev-cli/init": "file:../../command/init",
-    "@dev-cli/log": "file:../../utils/log",
+    "@dev-cli/exec": "^0.0.15",
+    "@dev-cli/get-npm-info": "^0.0.15",
+    "@dev-cli/init": "^0.0.15",
+    "@dev-cli/log": "^0.0.15",
     "colors": "^1.4.0",
     "commander": "^9.3.0",
     "dotenv": "^16.0.1",
@@ -42,5 +42,5 @@
     "root-check": "1",
     "semver": "^7.3.7"
   },
-  "gitHead": "61b41c4654912e752957ba85517d8a9201a8de0f"
+  "gitHead": "6a03396c81c3cc12a62985e241209e8087b7cec1"
 }
