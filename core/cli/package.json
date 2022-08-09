@@ -1,6 +1,6 @@
 {
   "name": "@dev-cli/core",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "> TODO: description",
   "author": "shibin",
   "homepage": "https://github.com/dev-cli/dev-cli#readme",
@@ -30,10 +30,10 @@
     "url": "https://github.com/dev-cli/dev-cli/issues"
   },
   "dependencies": {
-    "@dev-cli/exec": "^0.0.18",
-    "@dev-cli/get-npm-info": "^0.0.18",
-    "@dev-cli/init": "^0.0.18",
-    "@dev-cli/log": "^0.0.18",
+    "@dev-cli/exec": "^0.0.19",
+    "@dev-cli/get-npm-info": "^0.0.19",
+    "@dev-cli/init": "^0.0.19",
+    "@dev-cli/log": "^0.0.19",
     "colors": "^1.4.0",
     "commander": "^9.3.0",
     "dotenv": "^16.0.1",
