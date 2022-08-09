@@ -7,5 +7,4 @@
 ```
 const log = require('@dev-cli/log');
 
-// TODO: DEMONSTRATE API
 ```
