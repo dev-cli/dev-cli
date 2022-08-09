@@ -14,7 +14,8 @@
     "lib"
   ],
   "publishConfig": {
-    "registry": "https://registry.npmjs.com/"
+    "registry": "https://registry.npmjs.com/",
+    "access": "public"
   },
   "repository": {
     "type": "git",
@@ -33,5 +34,5 @@
   "bugs": {
     "url": "https://github.com/dev-cli/dev-cli/issues"
   },
-  "gitHead": "27c46b859df0bce870424783f3e09a40d5872682"
+  "gitHead": "840799e08697d791513906976c108f5ed7faeaab"
 }
