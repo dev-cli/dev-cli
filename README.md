@@ -85,5 +85,7 @@ lerna run <command>
 ## vscode 调试
 ### 单文件调试
 打开当前js文件，F5即可调试
+
 ### 项目调试
+
 `Ctrl + Shift + P`,选择`DEBUG:Toggle Auto Attach`，一般选择智能即可
