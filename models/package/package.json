@@ -1,6 +1,6 @@
 {
   "name": "@dev-cli/package",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "> TODO: description",
   "author": "shibin <shibiny6@gmail.com>",
   "homepage": "https://github.com/dev-cli/dev-cli#readme",
@@ -24,9 +24,9 @@
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
+    "@dev-cli/get-npm-info": "file:../../utils/get-npm-info",
     "@dev-cli/log": "file:../../utils/log",
     "@dev-cli/utils": "file:../../utils/utils",
-    "@dev-cli/get-npm-info":"file:../../utils/get-npm-info",
     "npminstall": "^6.5.0",
     "pkg-dir": "^5.0.0"
   },
