@@ -24,7 +24,8 @@
     "test": "echo \"Error: run tests from root\" && exit 1"
   }, 
   "dependencies": {
-    "@dev-cli/package": "file:../../models/package"
+    "@dev-cli/package": "file:../../models/package",
+    "@dev-cli/log": "file:../../utils/log"
   },
   
   "bugs": {
