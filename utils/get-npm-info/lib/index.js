@@ -54,5 +54,6 @@ module.exports = {
     getNpmInfo,
     // getNpmVersions,
     // getSemverVersion,
-    getSemverVersion
+    getSemverVersion,
+    getDetaultRegistry
 }

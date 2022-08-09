@@ -6,7 +6,7 @@ const log = require('@dev-cli/log')
 const path = require('path')
 
 const SETTINGS = {
-    init: '@dev-cli/utils'
+    init: '@dev-cli/init'
 }
 const CACHE_DIR = 'dependencies'
 async function exec() {
