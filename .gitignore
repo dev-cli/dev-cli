@@ -2,6 +2,7 @@ node_modules
 .vscode
 .idea
 pagkages/**/node_modules
+**/*/package-lock.jsons
 pnpm-lock.yaml
 package-lock.json
 lerna-debug.log
