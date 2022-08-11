@@ -39,13 +39,14 @@ async function getNpmInfo(pkgName, registry) {
 //     }
 //     return null
 // }
-async function getSemverVersion(pkgName, currentVersion, registry) {
+async function getSemverVersion(pkgName, registry) {
     const info = await getNpmInfo(pkgName, registry)
     if(info['dist-tags'] && info['dist-tags'].latest){
         return info['dist-tags'].latest
     }
     return null
-} 
+}
+
 function getDetaultRegistry(isOriginal = false) {
     return isOriginal ? 'https://registry.npmjs.org' : 'https://registry.npm.taobao.org'
 }

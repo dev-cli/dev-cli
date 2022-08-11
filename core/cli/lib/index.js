@@ -132,7 +132,6 @@ function registerCommand() {
             process.env.LOG_LEVER = 'info'
         }
         log.level = process.env.LOG_LEVER
-        log.verbose('dess')
     })
     // eeee监听
     program.on('command:*', function (obj) {

@@ -1,4 +1,4 @@
-# `@dev-cli/exec`
+# @dev-cli/exec
 
 > TODO: description
 

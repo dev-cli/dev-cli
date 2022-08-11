@@ -28,7 +28,9 @@
     "@dev-cli/get-npm-info": "^0.0.20",
     "@dev-cli/log": "^0.0.20",
     "@dev-cli/utils": "^0.0.20",
+    "fs-extra": "^10.1.0",
     "npminstall": "^6.5.0",
+    "path-exists": "^4.0.0",
     "pkg-dir": "^5.0.0"
   },
   "bugs": {

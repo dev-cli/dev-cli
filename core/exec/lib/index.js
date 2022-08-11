@@ -10,11 +10,9 @@ const SETTINGS = {
 }
 const CACHE_DIR = 'dependencies'
 async function exec() {
-    // const opts = this.opts()
     const cmdObj = arguments[arguments.length - 1]
     let targetPath = process.env.CLI_TARGET_PATH
     const packageName = SETTINGS[cmdObj.name()]
-    console.log(packageName)
     const homePath = process.env.CLI_HOME_PATH
     let pkg
     let storeDir = ''
@@ -29,13 +27,13 @@ async function exec() {
             packageVersion,
             storeDir
         })
-        if (pkg.exits()) {
+        if (await pkg.exits()) {
             // 更新package
-
+            console.log('update')
+            pkg.update()
         } else {
-          await  pkg.install()
+            await pkg.install()
         }
-
 
     } else {
         pkg = new Package({
@@ -43,11 +41,12 @@ async function exec() {
             packageName,
             packageVersion
         })
-    
+        console.log(pkg.exits())
+
     }
     const rootFile = pkg.getRootFilePath()
     log.verbose('rootFile ', rootFile)
-    require(rootFile).apply(this, arguments)
-    log.verbose('pkg', pkg)
+    // require(rootFile).apply(this, arguments)
+    // log.verbose('pkg', pkg)
 
 }
