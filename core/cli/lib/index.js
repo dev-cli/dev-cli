@@ -8,7 +8,6 @@ const pkg = require('../package.json')
 const constant = require('./const')
 const init = require('@dev-cli/init')
 const exec = require('@dev-cli/exec')
-
 // let args
 let userHome
 let config
@@ -22,21 +21,15 @@ async function core() {
 }
 async function prepare() {
     checkPkgVersion()
-    checkNodeVersion()
     checkRoot()
     checkUserHome()
-    checkEvn()
-    await checkGlobalUpdate()
+    await checkEvn()
+    // await checkGlobalUpdate()
 }
 function checkPkgVersion() {
-    log.notice('dev-cli', pkg.version)
+    log.notice('version', pkg.version)
 }
-function checkNodeVersion() {
-    const currentVersion = process.version
-    if (!semver.gte(currentVersion, constant.LOWEST_NODE_VERSION)) {
-        throw new Error(colors.red(`dev-cli 需要安装 v${constant.LOWEST_NODE_VERSION} 以上版本的 Node.js`))
-    }
-}
+
 function checkRoot() {
     const rootCheck = require('root-check')
     rootCheck()
@@ -45,7 +38,7 @@ async function checkUserHome() {
     // 拿到用户主目录
     userHome = homedir()
     // 判断用户主目录是否存在
-    if (!userHome || !await pathExists(userHome)) {
+    if (!userHome || !(await pathExists(userHome))) {
         throw new Error(colors.red('当前用户主目录不存在'))
     }
 }
@@ -120,10 +113,6 @@ function registerCommand() {
             process.env.CLI_TARGET_PATH = this.opts().targetPath
         }
     })
-    program.command('init [name]')
-        .option('-f, --force', '是否强制初始化项目')
-        .action(exec)
-
     program.on('option:debug', function () {
         console.log('debug', this.opts().debug)
         if (this.opts().debug) {
@@ -131,20 +120,23 @@ function registerCommand() {
         } else {
             process.env.LOG_LEVER = 'info'
         }
+        console.log( process.env.LOG_LEVER)
         log.level = process.env.LOG_LEVER
-    })
+    });
+
+    program.command('init [name]')
+    .option('-f, --force', '是否强制初始化项目')
+        .action(exec);
     // eeee监听
     program.on('command:*', function (obj) {
         log.error('未知的命令' + obj[0])
         const availableCommands = program.commands.map(cmd => cmd.name())
         console.log('可用的命令', availableCommands.join(', '))
     })
-    // console.log(program.args)
 
     program.parse()
     if (program.args && program.args.length < 1) {
         program.outputHelp()
-        console.log()
     }
 }
 module.exports = core;

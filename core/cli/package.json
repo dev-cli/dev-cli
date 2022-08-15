@@ -31,10 +31,10 @@
     "url": "https://github.com/dev-cli/dev-cli/issues"
   },
   "dependencies": {
-    "@dev-cli/exec": "^0.0.20",
-    "@dev-cli/get-npm-info": "^0.0.20",
-    "@dev-cli/init": "^0.0.20",
-    "@dev-cli/log": "^0.0.20",
+    "@dev-cli/exec": "file:../exec",
+    "@dev-cli/get-npm-info": "file:../../utils/get-npm-info",
+    "@dev-cli/init": "file:../../command/init",
+    "@dev-cli/log": "file:../../utils/log",
     "colors": "^1.4.0",
     "commander": "^9.3.0",
     "dotenv": "^16.0.1",

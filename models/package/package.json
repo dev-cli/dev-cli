@@ -25,9 +25,9 @@
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "dependencies": {
-    "@dev-cli/get-npm-info": "^0.0.20",
-    "@dev-cli/log": "^0.0.20",
-    "@dev-cli/utils": "^0.0.20",
+    "@dev-cli/get-npm-info": "file:../../utils/get-npm-info",
+    "@dev-cli/log": "file:../../utils/log",
+    "@dev-cli/utils": "file:../../utils/utils",
     "fs-extra": "^10.1.0",
     "npminstall": "^6.5.0",
     "path-exists": "^4.0.0",

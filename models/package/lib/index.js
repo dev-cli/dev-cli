@@ -92,6 +92,7 @@ class Package {
                 console.log('dir ', dir)
                 // 读取package.json require()
                 const pkg = require(path.join(dir, 'package.json'))
+
                 if (pkg && pkg.main) {
                     return path.resolve(dir, pkg.main || pkg.lib)
                 }

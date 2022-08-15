@@ -1,5 +1,5 @@
 {
-  "name": "@dev-cli/init",
+  "name": "@dev-cli/command",
   "version": "0.0.20",
   "description": "> TODO: description",
   "author": "shibin <shibiny6@gmail.com>",
@@ -14,21 +14,22 @@
     "lib"
   ],
   "publishConfig": {
-    "registry": "https://registry.npmjs.com/",
-    "access": "public"
+    "registry": "https://registry.npmjs.com/"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dev-cli/dev-cli.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
-  },
-  "dependencies": {
-    "@dev-cli/command": "file:../../models/command"
+    "test": "node ./__tests__/@dev-cli/Command.test.js"
   },
   "bugs": {
     "url": "https://github.com/dev-cli/dev-cli/issues"
   },
-  "gitHead": "840799e08697d791513906976c108f5ed7faeaab"
+  "dependencies": {
+    "colors": "^1.4.0",
+    "semver": "^7.3.7",
+    "@dev-cli/log": "file:../../utils/log",
+    "@dev-cli/utils": "file:../../utils/utils"
+  }
 }

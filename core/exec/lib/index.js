@@ -17,8 +17,8 @@ async function exec() {
     let pkg
     let storeDir = ''
     const packageVersion = 'latest'
-    if (!targetPath) {
 
+    if (!targetPath) {
         targetPath = path.resolve(homePath, CACHE_DIR)
         storeDir = path.resolve(targetPath, 'node_modules')
         pkg = new Package({
@@ -30,7 +30,7 @@ async function exec() {
         if (await pkg.exits()) {
             // 更新package
             console.log('update')
-            pkg.update()
+            await pkg.update()
         } else {
             await pkg.install()
         }
@@ -41,12 +41,15 @@ async function exec() {
             packageName,
             packageVersion
         })
-        console.log(pkg.exits())
-
+        await pkg.exits()
     }
     const rootFile = pkg.getRootFilePath()
     log.verbose('rootFile ', rootFile)
-    // require(rootFile).apply(this, arguments)
+    try {
+        require(rootFile).call(null, Array.from(arguments))
+    } catch (e) {
+        log.error(e.message)
+    }
     // log.verbose('pkg', pkg)
 
 }
