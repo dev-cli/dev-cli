@@ -1,13 +1,13 @@
-'use strict';
 
-module.exports = exec;
 const Package = require('@dev-cli/package')
 const log = require('@dev-cli/log')
 const path = require('path')
+const cp = require('child_process');
 
 const SETTINGS = {
     init: '@dev-cli/init'
 }
+
 const CACHE_DIR = 'dependencies'
 async function exec() {
     const cmdObj = arguments[arguments.length - 1]
@@ -46,10 +46,41 @@ async function exec() {
     const rootFile = pkg.getRootFilePath()
     log.verbose('rootFile ', rootFile)
     try {
-        require(rootFile).call(null, Array.from(arguments))
+        // require(rootFile).call(null, Array.from(arguments))
+        const argv = Array.from(arguments)
+        const o = Object.create(null)
+        const cmd = argv[argv.length - 1]
+        Object.keys(cmd).forEach(key => {
+            if (cmd.hasOwnProperty(key) && !key.startsWith('_') && key !== 'parent') {
+                o[key] = cmd[key]
+            }
+        })
+        // console.log(o);
+
+        argv[argv.length - 1] = o
+        const code = `require('${rootFile}').call(null, ${JSON.stringify(argv)})`
+        console.log(process.cwd(), process.platform)
+        const child = cp.spawn('node', ['-e', code], {
+            cwd: process.cwd(),
+            stdio: 'inherit'
+        })
+        child.on('error', err => {
+            log.error(err.message)
+            process.exit(1)
+        })
+        child.on('exit', msg => {
+            log.verbose('命令执行成功 ' + msg)
+        })
+        // child.stdout.on('data', chunk => {
+
+        // })
+        // child.stderr.on('data', chunk => {
+
+        // })
     } catch (e) {
-        log.error(e.message)
+        log.error('rootFile ' + e.message)
     }
     // log.verbose('pkg', pkg)
 
 }
+module.exports = exec;

@@ -13,7 +13,7 @@ class InitCommand extends Command {
 }
 
 function init(argv) {
-    // TODO
+    console.log('init')
     return new InitCommand(argv)
 }
 module.exports = init
