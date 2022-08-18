@@ -59,7 +59,6 @@ async function exec() {
 
         argv[argv.length - 1] = o
         const code = `require('${rootFile}').call(null, ${JSON.stringify(argv)})`
-        console.log(process.cwd(), process.platform)
         const child = cp.spawn('node', ['-e', code], {
             cwd: process.cwd(),
             stdio: 'inherit'

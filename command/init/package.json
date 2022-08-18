@@ -26,7 +26,10 @@
   },
   "dependencies": {
     "@dev-cli/command": "file:../../models/command",
-    "@dev-cli/log": "file:../../utils/log"
+    "@dev-cli/log": "file:../../utils/log",
+    "fs-extra": "^10.1.0",
+    "inquirer": "^8.2.4",
+    "semver": "^7.3.7"
   },
   "bugs": {
     "url": "https://github.com/dev-cli/dev-cli/issues"
