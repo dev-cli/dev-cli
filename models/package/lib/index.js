@@ -9,7 +9,6 @@ const pathExistsSync = require('path-exists').sync
 const fse = require('fs-extra')
 class Package {
     constructor(options) {
-        console.log(options)
         if (!options) throw new Error('Package 类的 options 参数不能为空')
         else if (!isObject(options)) throw new Error('Package 类的 options 参数必须是一个对象')
         this.targetPath = options.targetPath

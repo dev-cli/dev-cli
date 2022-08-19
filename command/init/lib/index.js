@@ -10,11 +10,16 @@ class InitCommand extends Command {
         this.projectName = this._argv[0] || ''
         this.force = !!this._argv[1].force
         log.verbose('project name', this.projectName)
+        console.log(process.env.LOG_LEVEL)
         log.verbose('force', this.force)
     }
-    exec() {
+    async exec() {
         try {
-            this.prepare()
+            const projeftInfo =await this.prepare()
+            if(projeftInfo){
+                console.log('projeftInfo',projeftInfo)
+                log.verbose('projeftInfo', projeftInfo)
+            }
         } catch (e) {
             log.error(e.message)
         }
@@ -104,7 +109,7 @@ class InitCommand extends Command {
                         }
                     }
                 }])
-            console.log(o)
+            return o
         } else if (type === TYPE_COMPONENT) {
 
         }
@@ -117,7 +122,6 @@ class InitCommand extends Command {
 }
 
 function init(argv) {
-    console.log('init')
     return new InitCommand(argv)
 }
 module.exports = init

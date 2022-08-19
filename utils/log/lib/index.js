@@ -4,4 +4,5 @@ log.level = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info'
 // 每行开头打印的标题
 log.heading="dev-cli"
 log.addLevel('success', 2000, { fg: 'green', bold: true })
+console.log('level:', log.level)
 module.exports = log
