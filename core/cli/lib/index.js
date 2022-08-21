@@ -59,14 +59,13 @@ async function checkUserHome() {
 
 async function checkEvn() {
     const dotenv = require('dotenv')
-    const dotenvPath = path.resolve(userHome, '.env')
+    const dotenvPath = path.resolve(userHome, '.devenv')
     if (await pathExists(dotenvPath)) {
         dotenv.config({
             path: dotenvPath 
         })
     }
     config = createDefaultConfig()
-
     log.verbose('环境变量', config)
 }
 

@@ -1,30 +1,63 @@
 const Command = require('@dev-cli/command')
 const log = require('@dev-cli/log')
+const Package = require('@dev-cli/package')
 const fs = require('fs')
+const path = require('path')
+const { homedir } = require('os')
 const inquirer = require('inquirer')
 const fse = require('fs-extra')
 const semver = require('semver')
+const { getTemplate } = require('./getTemplate')
 const { TYPE_PROJECT, TYPE_COMPONENT } = require('./const')
+
 class InitCommand extends Command {
     init() {
         this.projectName = this._argv[0] || ''
         this.force = !!this._argv[1].force
         log.verbose('project name', this.projectName)
-        console.log(process.env.LOG_LEVEL)
         log.verbose('force', this.force)
     }
     async exec() {
         try {
-            const projeftInfo =await this.prepare()
-            if(projeftInfo){
-                console.log('projeftInfo',projeftInfo)
+            const projeftInfo = await this.prepare()
+            if (projeftInfo) {
+                this.projeftInfo = projeftInfo
+                await this.downloadTemplate()
+                console.log('projeftInfo', projeftInfo)
                 log.verbose('projeftInfo', projeftInfo)
             }
         } catch (e) {
             log.error(e.message)
         }
     }
+    async downloadTemplate() {
+        const templateInfo = this.templates.find(item => item.packageName === this.projeftInfo.template)
+        if (!templateInfo) return
+        const homePath = homedir()
+        console.log(homePath)
+        const targetPath = path.resolve(homePath, '.dev-cli', 'template')
+        const storeDir = path.resolve(homePath, '.dev-cli', 'template', 'node_modules')
+
+        const templatePackage = new Package({
+            targetPath,
+            storeDir,
+            packageName: templateInfo.packageName,
+            packageVersion: templateInfo.version
+        })
+        console.log(templatePackage)
+        if (!await templatePackage.exits()) {
+            await templatePackage.install()
+        } else {
+            await templatePackage.update()
+        }
+    }
     async prepare() {
+        console.log('获取模版')
+        const templates = await getTemplate()
+        if (!templates.length) {
+            return log.error('模版不存在')
+        }
+        this.templates = templates
         // 判断当前目录是否为空
         if (!this.isDirIsEmpty()) {
             // 没有传递 
@@ -52,6 +85,12 @@ class InitCommand extends Command {
             if (confirmDelete) fse.emptyDirSync(process.cwd())
         }
         return this.getProjectInfo()
+    }
+    templateChoices() {
+        return this.templates.map(item => ({
+            value: item.packageName,
+            name: item.name
+        }))
     }
     async getProjectInfo() {
         // 选择创建项目或组件
@@ -108,7 +147,13 @@ class InitCommand extends Command {
                             return v
                         }
                     }
-                }])
+                }, {
+                    type: 'list',
+                    name: 'template',
+                    message: '请选择项目模板',
+                    choices: this.templateChoices()
+                }
+                ])
             return o
         } else if (type === TYPE_COMPONENT) {
 
