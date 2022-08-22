@@ -27,5 +27,8 @@
   "bugs": {
     "url": "https://github.com/dev-cli/dev-cli/issues"
   },
-  "gitHead": "840799e08697d791513906976c108f5ed7faeaab"
+  "gitHead": "840799e08697d791513906976c108f5ed7faeaab",
+  "dependencies": {
+    "cli-spinner": "^0.2.10"
+  }
 }

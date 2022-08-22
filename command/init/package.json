@@ -29,10 +29,10 @@
     "@dev-cli/log": "file:../../utils/log",
     "@dev-cli/package": "file:../../models/package",
     "@dev-cli/request": "file:../../utils/request",
+    "@dev-cli/utils": "file:../../utils/utils",
     "fs-extra": "^10.1.0",
     "inquirer": "^8.2.4",
-    "semver": "^7.3.7",
-    "user-home": "^3.0.0"
+    "semver": "^7.3.7"
   },
   "bugs": {
     "url": "https://github.com/dev-cli/dev-cli/issues"

@@ -11,6 +11,7 @@ const exec = require('@dev-cli/exec')
 // let args
 let userHome
 let config
+console.log('command')
 async function core() {
     try { 
         await prepare()

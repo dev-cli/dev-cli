@@ -7,6 +7,7 @@ const { homedir } = require('os')
 const inquirer = require('inquirer')
 const fse = require('fs-extra')
 const semver = require('semver')
+const { spinnerStart, sleep } = require('@dev-cli/utils')
 const { getTemplate } = require('./getTemplate')
 const { TYPE_PROJECT, TYPE_COMPONENT } = require('./const')
 
@@ -44,9 +45,12 @@ class InitCommand extends Command {
             packageName: templateInfo.packageName,
             packageVersion: templateInfo.version
         })
-        console.log(templatePackage)
+    
         if (!await templatePackage.exits()) {
+            const spinner = spinnerStart('正在下载模板')
+            await sleep()
             await templatePackage.install()
+            spinner.stop(false)
         } else {
             await templatePackage.update()
         }
