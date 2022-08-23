@@ -10,7 +10,8 @@ const semver = require('semver')
 const { spinnerStart, sleep } = require('@dev-cli/utils')
 const { getTemplate } = require('./getTemplate')
 const { TYPE_PROJECT, TYPE_COMPONENT } = require('./const')
-
+const TYPE_NORMAL = 'normal'
+const TYPE_CUSTOM = 'custom'
 class InitCommand extends Command {
     init() {
         this.projectName = this._argv[0] || ''
@@ -24,18 +25,53 @@ class InitCommand extends Command {
             if (projeftInfo) {
                 this.projeftInfo = projeftInfo
                 await this.downloadTemplate()
-                console.log('projeftInfo', projeftInfo)
                 log.verbose('projeftInfo', projeftInfo)
+                await this.installTemplate()
             }
         } catch (e) {
             log.error(e.message)
         }
     }
+    async installTemplate() {
+        if (this.templateInfo) {
+            if (!this.templateInfo.type) {
+                this.templateInfo.type = TYPE_NORMAL
+            }
+            if (this.templateInfo.type === TYPE_NORMAL) {
+                await this.installNormalTemplate()
+            } else if (this.templateInfo.type === TYPE_CUSTOM) {
+                await this.installCustomTemplate()
+            } else {
+                throw new Error('项目模板类型无法识别')
+            }
+        } else {
+            throw new Error('项目模板不存在')
+        }
+    }
+    async installNormalTemplate() {
+        const spinner = spinnerStart('正在安装模板')
+        try {
+            const templatePath = this.templatePackage.cacheFilePath
+            const targetPath = process.cwd()
+            fse.ensureDirSync(templatePath)
+            fse.ensureDirSync(targetPath)
+            fse.copySync(templatePath, targetPath)
+            spinner.stop(true)
+            log.success('模板安装成功')
+        } catch (e) {
+            throw e
+        }
+        spinner.stop(true)
+    }
+    async installCustomTemplate() {
+        console.log('安装自定义模板')
+
+    }
     async downloadTemplate() {
         const templateInfo = this.templates.find(item => item.packageName === this.projeftInfo.template)
         if (!templateInfo) return
+        this.templateInfo = templateInfo
         const homePath = homedir()
-        console.log(homePath)
         const targetPath = path.resolve(homePath, '.dev-cli', 'template')
         const storeDir = path.resolve(homePath, '.dev-cli', 'template', 'node_modules')
 
@@ -45,15 +81,28 @@ class InitCommand extends Command {
             packageName: templateInfo.packageName,
             packageVersion: templateInfo.version
         })
-    
+        this.templatePackage = templatePackage
+
         if (!await templatePackage.exits()) {
             const spinner = spinnerStart('正在下载模板')
             await sleep()
             await templatePackage.install()
-            spinner.stop(false)
+            spinner.stop(true)
+            if (await templatePackage.exits()) {
+                // log.success('模板下载完成')
+                log.success('模板下载完成')
+            }
         } else {
+            const spinner = spinnerStart('正在更新模板')
+            await sleep()
             await templatePackage.update()
+            spinner.stop(true)
+            if (await templatePackage.exits()) {
+                // log.success('模板下载完成')
+                log.success('模板更新完成')
+            }
         }
+
     }
     async prepare() {
         console.log('获取模版')

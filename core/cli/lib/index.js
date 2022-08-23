@@ -6,12 +6,11 @@ const log = require('@dev-cli/log')
 const path = require('path')
 const pkg = require('../package.json')
 const constant = require('./const')
-const init = require('@dev-cli/init')
 const exec = require('@dev-cli/exec')
 // let args
 let userHome
 let config
-console.log('command')
+
 async function core() {
     try { 
         await prepare()
@@ -114,14 +113,12 @@ function registerCommand() {
         }
     })
     program.on('option:debug', function () {
-        console.log('debug', this.opts().debug)
         if (this.opts().debug) {
-            process.env.LOG_LEVER = 'verbose'
+            process.env.LOG_LEVEL = 'verbose'
         } else {
-            process.env.LOG_LEVER = 'info'
+            process.env.LOG_LEVEL = 'info'
         }
-        console.log( process.env.LOG_LEVER)
-        log.level = process.env.LOG_LEVER
+        log.level = process.env.LOG_LEVEL
     });
 
     program.command('init [name]')

@@ -67,7 +67,6 @@ class Package {
             })
             this.packageVersion = this.latestVersion
         } else {
-            console.log('最新')
         }
     }
 
@@ -88,7 +87,7 @@ class Package {
         function _getRootFilePath(targetPath) {
             const dir = pkgDir(targetPath)
             if (dir) {
-                console.log('dir ', dir)
+                log.verbose('dir ', dir)
                 // 读取package.json require()
                 const pkg = require(path.join(dir, 'package.json'))
 
