@@ -7,11 +7,10 @@ const { homedir } = require('os')
 const inquirer = require('inquirer')
 const fse = require('fs-extra')
 const semver = require('semver')
-const { spinnerStart, sleep } = require('@dev-cli/utils')
+const { spinnerStart, sleep, execAsync } = require('@dev-cli/utils')
 const { getTemplate } = require('./getTemplate')
-const { TYPE_PROJECT, TYPE_COMPONENT } = require('./const')
-const TYPE_NORMAL = 'normal'
-const TYPE_CUSTOM = 'custom'
+const { TYPE_PROJECT, TYPE_COMPONENT, TYPE_NORMAL, TYPE_CUSTOM } = require('./const')
+
 class InitCommand extends Command {
     init() {
         this.projectName = this._argv[0] || ''
@@ -51,8 +50,10 @@ class InitCommand extends Command {
     async installNormalTemplate() {
         const spinner = spinnerStart('正在安装模板')
         try {
-            const templatePath = this.templatePackage.cacheFilePath
+            const templatePath = this.templatePackage.cacheFilePath + '/template'
             const targetPath = process.cwd()
+            console.log(templatePath, targetPath)
+
             fse.ensureDirSync(templatePath)
             fse.ensureDirSync(targetPath)
             fse.copySync(templatePath, targetPath)
@@ -62,6 +63,29 @@ class InitCommand extends Command {
             throw e
         }
         spinner.stop(true)
+        log.verbose('依赖安装')
+        const { installCommand, startCommand } = this.templateInfo
+        if (installCommand) {
+            const cmds = installCommand.split(' ')
+            console.log(cmds)
+            const cmd = cmds[0]
+            const args = cmds.slice(1)
+            const ret = await execAsync(cmd, args)
+            if (ret !== 0) {
+                log.error('依赖安装失败')
+            }
+            console.log(ret)
+        }
+        if (startCommand) {
+            const cmds = startCommand.split(' ')
+            const cmd = cmds[0]
+            const args = cmds.slice(1)
+            const ret = await execAsync(cmd, args)
+            if (ret !== 0) {
+                log.error('启动失败')
+            }
+        }
+
     }
     async installCustomTemplate() {
         console.log('安装自定义模板')
