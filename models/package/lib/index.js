@@ -54,6 +54,7 @@ class Package {
         if (!this.latestVersion) {
             this.latestVersion = await getSemverVersion(this.packageName)
         }
+        log.verbose('最新版本： '+ this.latestVersion)
         const latestFilePath = this.getSpecificCacheFilePath(this.latestVersion)
         if (!pathExistsSync(latestFilePath)) {
             await npminstall({
@@ -65,9 +66,9 @@ class Package {
                     version: this.latestVersion
                 }]
             })
-            this.packageVersion = this.latestVersion
         } else {
         }
+        this.packageVersion = this.latestVersion
     }
 
     async exits() {

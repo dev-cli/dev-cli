@@ -7,10 +7,15 @@ const { homedir } = require('os')
 const inquirer = require('inquirer')
 const fse = require('fs-extra')
 const semver = require('semver')
+const glob = require('glob')
+const ejs = require('ejs')
 const { spinnerStart, sleep, execAsync } = require('@dev-cli/utils')
 const { getTemplate } = require('./getTemplate')
 const { TYPE_PROJECT, TYPE_COMPONENT, TYPE_NORMAL, TYPE_CUSTOM } = require('./const')
 
+const renameFiles = {
+    _gitignore: '.gitignore'
+}
 class InitCommand extends Command {
     init() {
         this.projectName = this._argv[0] || ''
@@ -20,11 +25,11 @@ class InitCommand extends Command {
     }
     async exec() {
         try {
-            const projeftInfo = await this.prepare()
-            if (projeftInfo) {
-                this.projeftInfo = projeftInfo
+            const projectInfo = await this.prepare()
+            if (projectInfo) {
+                this.projectInfo = projectInfo
                 await this.downloadTemplate()
-                log.verbose('projeftInfo', projeftInfo)
+                log.verbose('projectInfo', projectInfo)
                 await this.installTemplate()
             }
         } catch (e) {
@@ -52,29 +57,36 @@ class InitCommand extends Command {
         try {
             const templatePath = this.templatePackage.cacheFilePath + '/template'
             const targetPath = process.cwd()
-            console.log(templatePath, targetPath)
-
             fse.ensureDirSync(templatePath)
             fse.ensureDirSync(targetPath)
             fse.copySync(templatePath, targetPath)
-            spinner.stop(true)
+            // 重命名 _gitignore等文件
+            Object.keys(renameFiles).forEach(key => {
+                const file = `${targetPath}/${key}`
+                if (fse.existsSync(file)) {
+                    fse.renameSync(file, `${targetPath}/${renameFiles[key]}`)
+                }
+            })
+            // ejs渲染模板
+            console.log('模板渲染')
+            const ignore = ['node_modules/**', 'public/**']
+            await this.ejsRender({ ignore })
             log.success('模板安装成功')
-        } catch (e) {
-            throw e
+        } catch (err) {
+            // console.log(err)
+            spinner.stop(true)
+            throw err
         }
         spinner.stop(true)
-        log.verbose('依赖安装')
         const { installCommand, startCommand } = this.templateInfo
         if (installCommand) {
             const cmds = installCommand.split(' ')
-            console.log(cmds)
             const cmd = cmds[0]
             const args = cmds.slice(1)
             const ret = await execAsync(cmd, args)
             if (ret !== 0) {
                 log.error('依赖安装失败')
             }
-            console.log(ret)
         }
         if (startCommand) {
             const cmds = startCommand.split(' ')
@@ -91,8 +103,37 @@ class InitCommand extends Command {
         console.log('安装自定义模板')
 
     }
+    ejsRender({ ignore }) {
+        return new Promise((resolve, reject) => {
+            const dir = process.cwd()
+            glob('**', {
+                cwd: dir,
+                ignore,
+                nodir: true
+            }, (err, files) => {
+                if (err) reject(err)
+                Promise.all(files.map(file => {
+                    const filePath = path.resolve(dir, file)
+                    return new Promise((resolve, reject) => {
+                        ejs.renderFile(filePath, {
+                            ...this.projectInfo
+                        }, {}, (err, res) => {
+                            if (err) reject(err)
+                            else {
+                                fse.writeFile(filePath, res, (err) => {
+                                    if (err) reject(err)
+                                    else resolve()
+                                })
+                            }
+                        })
+                    })
+                })).then(resolve)
+                    .catch(reject)
+            })
+        })
+    }
     async downloadTemplate() {
-        const templateInfo = this.templates.find(item => item.packageName === this.projeftInfo.template)
+        const templateInfo = this.templates.find(item => item.packageName === this.projectInfo.template)
         if (!templateInfo) return
         this.templateInfo = templateInfo
         const homePath = homedir()
@@ -126,8 +167,8 @@ class InitCommand extends Command {
                 log.success('模板更新完成')
             }
         }
-
     }
+
     async prepare() {
         console.log('获取模版')
         const templates = await getTemplate()
@@ -184,29 +225,19 @@ class InitCommand extends Command {
                 value: TYPE_COMPONENT
             }]
         })
+        let o = {}
+        function isValidateNameFn(name) {
+            if (!name) return false
+            // 以字母开头
+            const reg = /^[a-zA-Z]+[\w-]*[a-zA-Z0-9]$/
+            return reg.test(name)
+        }
+        const isValidateName = isValidateNameFn(this.projectName)
         if (type === TYPE_PROJECT) {
-            const o = await inquirer.prompt(
-                [{
+            const projectPrompts = [
+                {
                     type: 'input',
-                    name: 'projectName',
-                    message: '请输入项目名称',
-                    default: '',
-                    validate: function (v) {
-                        const done = this.async()
-                        // 以字母开头
-                        const reg = /^[a-zA-Z]+[\w-]*[a-zA-Z0-9]$/
-                        if (!reg.test(v)) {
-                            done('请输入合法的项目名称')
-                            return
-                        }
-                        done(null, true)
-                    },
-                    filter: function (v) {
-                        return v
-                    }
-                }, {
-                    type: 'input',
-                    name: 'projectVersion',
+                    name: 'version',
                     message: '请输入项目版本号',
                     default: '1.0.0',
                     validate: function (v) {
@@ -230,11 +261,41 @@ class InitCommand extends Command {
                     message: '请选择项目模板',
                     choices: this.templateChoices()
                 }
-                ])
-            return o
+            ]
+            const projectNamePrompt = {
+                type: 'input',
+                name: 'projectName',
+                message: '请输入项目名称',
+                default: '',
+                validate: function (v) {
+                    const done = this.async()
+                    if (!isValidateNameFn(v)) {
+                        done('请输入合法的项目名称')
+                        return
+                    }
+                    done(null, true)
+                },
+                filter: function (v) {
+                    return v
+                }
+            }
+            if (!isValidateName) {
+                projectPrompts.unshift(projectNamePrompt)
+            }
+            o = await inquirer.prompt(projectPrompts)
+
         } else if (type === TYPE_COMPONENT) {
 
         }
+        const projectInfo = {
+            type,
+            projectName: isValidateName? this.projectName: null,
+            ...o
+        }
+        if (projectInfo.projectName) {
+            projectInfo.name = require('kebab-case')(projectInfo.projectName).replace(/^-/, '')
+        }
+        return projectInfo
     }
     isDirIsEmpty() {
         const localPath = process.cwd()
