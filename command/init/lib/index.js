@@ -69,7 +69,9 @@ class InitCommand extends Command {
             })
             // ejs渲染模板
             console.log('模板渲染')
-            const ignore = ['node_modules/**', 'public/**']
+            const templateIgnore = this.templateInfo.ignore?this.templateInfo.ignore:[]
+            const ignore = ['node_modules/**', '**/*.png',...templateIgnore]
+            log.verbose('ignore', ignore)
             await this.ejsRender({ ignore })
             log.success('模板安装成功')
         } catch (err) {
@@ -225,7 +227,11 @@ class InitCommand extends Command {
                 value: TYPE_COMPONENT
             }]
         })
-        let o = {}
+        const title = type === TYPE_COMPONENT ? '组件': '项目'
+
+        this.templates = this.templates.filter(template => {
+            return template.tag.includes(type)
+        })
         function isValidateNameFn(name) {
             if (!name) return false
             // 以字母开头
@@ -233,60 +239,75 @@ class InitCommand extends Command {
             return reg.test(name)
         }
         const isValidateName = isValidateNameFn(this.projectName)
-        if (type === TYPE_PROJECT) {
-            const projectPrompts = [
-                {
-                    type: 'input',
-                    name: 'version',
-                    message: '请输入项目版本号',
-                    default: '1.0.0',
-                    validate: function (v) {
-                        const done = this.async()
-                        if (!semver.valid(v)) {
-                            done('请输入合法的项目版本号')
-                            return
-                        }
-                        done(null, true)
-                    },
-                    filter: function (v) {
-                        if (semver.valid(v)) {
-                            return semver.valid(v)
-                        } else {
-                            return v
-                        }
-                    }
-                }, {
-                    type: 'list',
-                    name: 'template',
-                    message: '请选择项目模板',
-                    choices: this.templateChoices()
-                }
-            ]
-            const projectNamePrompt = {
+        const projectPrompts = [
+            {
                 type: 'input',
-                name: 'projectName',
-                message: '请输入项目名称',
-                default: '',
+                name: 'version',
+                message: `请输入${title}版本号`,
+                default: '1.0.0',
                 validate: function (v) {
                     const done = this.async()
-                    if (!isValidateNameFn(v)) {
-                        done('请输入合法的项目名称')
+                    if (!semver.valid(v)) {
+                        done('请输入合法的项目版本号')
                         return
                     }
                     done(null, true)
                 },
                 filter: function (v) {
-                    return v
+                    if (semver.valid(v)) {
+                        return semver.valid(v)
+                    } else {
+                        return v
+                    }
                 }
+            }, {
+                type: 'list',
+                name: 'template',
+                message: `请选择${title}模板`,
+                choices: this.templateChoices()
             }
-            if (!isValidateName) {
-                projectPrompts.unshift(projectNamePrompt)
+        ]
+        const projectNamePrompt = {
+            type: 'input',
+            name: 'projectName',
+            message:`请输入${title}名称`,
+            default: '',
+            validate: function (v) {
+                const done = this.async()
+                if (!isValidateNameFn(v)) {
+                    done(`请输入合法的${title}名称`)
+                    return
+                }
+                done(null, true)
+            },
+            filter: function (v) {
+                return v
             }
-            o = await inquirer.prompt(projectPrompts)
-
-        } else if (type === TYPE_COMPONENT) {
-
         }
+        if (!isValidateName) {
+            projectPrompts.unshift(projectNamePrompt)
+        }
+        if (type === TYPE_PROJECT) {
+         
+        } else if (type === TYPE_COMPONENT) {
+            const descriptionPrompt = {
+                type: 'input',
+                name: 'description',
+                message: `请输入${title}描述信息`, 
+                default: '',
+                validate: function (v) {
+                    const done = this.async()
+                    if (!v) {
+                        done('请输入组件描述信息')
+                        return
+                    }
+                    done(null, true)
+                },
+            } 
+            projectPrompts.push(descriptionPrompt)
+        }
+        const o = await inquirer.prompt(projectPrompts)
+
         const projectInfo = {
             type,
             projectName: isValidateName? this.projectName: null,
