@@ -61,16 +61,11 @@ class InitCommand extends Command {
             fse.ensureDirSync(targetPath)
             fse.copySync(templatePath, targetPath)
             // 重命名 _gitignore等文件
-            Object.keys(renameFiles).forEach(key => {
-                const file = `${targetPath}/${key}`
-                if (fse.existsSync(file)) {
-                    fse.renameSync(file, `${targetPath}/${renameFiles[key]}`)
-                }
-            })
+            rename(targetPath)
             // ejs渲染模板
-            console.log('模板渲染')
-            const templateIgnore = this.templateInfo.ignore?this.templateInfo.ignore:[]
-            const ignore = ['node_modules/**', '**/*.png',...templateIgnore]
+            log.verbose('模板渲染')
+            const templateIgnore = this.templateInfo.ignore ? this.templateInfo.ignore : []
+            const ignore = ['node_modules/**', '**/*.png', ...templateIgnore]
             log.verbose('ignore', ignore)
             await this.ejsRender({ ignore })
             log.success('模板安装成功')
@@ -82,28 +77,31 @@ class InitCommand extends Command {
         spinner.stop(true)
         const { installCommand, startCommand } = this.templateInfo
         if (installCommand) {
-            const cmds = installCommand.split(' ')
-            const cmd = cmds[0]
-            const args = cmds.slice(1)
-            const ret = await execAsync(cmd, args)
-            if (ret !== 0) {
-                log.error('依赖安装失败')
-            }
+            await execCmd(installCommand, '依赖安装失败')
         }
         if (startCommand) {
-            const cmds = startCommand.split(' ')
-            const cmd = cmds[0]
-            const args = cmds.slice(1)
-            const ret = await execAsync(cmd, args)
-            if (ret !== 0) {
-                log.error('启动失败')
-            }
+            await execCmd(startCommand, '启动失败')
         }
-
     }
     async installCustomTemplate() {
-        console.log('安装自定义模板')
-
+        log.notice('安装自定义模板')
+        if (await this.templatePackage.exits()) {
+            const rootFile = this.templatePackage.getRootFilePath()
+            if (fse.existsSync(rootFile)) {
+                log.verbose('开始执行自定义模板')
+                const options = {
+                    ...this.templateInfo,
+                    targetPath: process.cwd(),
+                    templatePath: this.templatePackage.cacheFilePath + '/template',
+                    projectInfo: this.projectInfo
+                }
+                const code = `require('${rootFile}')(${JSON.stringify(options)})`
+                await execAsync('node', ['-e', code])
+                log.success('自定义模板安装成功')
+            } else {
+                throw new Error('自定义模板文件不存在')
+            }
+        }
     }
     ejsRender({ ignore }) {
         return new Promise((resolve, reject) => {
@@ -227,7 +225,7 @@ class InitCommand extends Command {
                 value: TYPE_COMPONENT
             }]
         })
-        const title = type === TYPE_COMPONENT ? '组件': '项目'
+        const title = type === TYPE_COMPONENT ? '组件' : '项目'
 
         this.templates = this.templates.filter(template => {
             return template.tag.includes(type)
@@ -270,7 +268,7 @@ class InitCommand extends Command {
         const projectNamePrompt = {
             type: 'input',
             name: 'projectName',
-            message:`请输入${title}名称`,
+            message: `请输入${title}名称`,
             default: '',
             validate: function (v) {
                 const done = this.async()
@@ -288,12 +286,12 @@ class InitCommand extends Command {
             projectPrompts.unshift(projectNamePrompt)
         }
         if (type === TYPE_PROJECT) {
-         
+
         } else if (type === TYPE_COMPONENT) {
             const descriptionPrompt = {
                 type: 'input',
                 name: 'description',
-                message: `请输入${title}描述信息`, 
+                message: `请输入${title}描述信息`,
                 default: '',
                 validate: function (v) {
                     const done = this.async()
@@ -303,14 +301,14 @@ class InitCommand extends Command {
                     }
                     done(null, true)
                 },
-            } 
+            }
             projectPrompts.push(descriptionPrompt)
         }
         const o = await inquirer.prompt(projectPrompts)
 
         const projectInfo = {
             type,
-            projectName: isValidateName? this.projectName: null,
+            projectName: isValidateName ? this.projectName : null,
             ...o
         }
         if (projectInfo.projectName) {
@@ -324,7 +322,23 @@ class InitCommand extends Command {
         return fileList.length === 0
     }
 }
-
+function rename(targetPath) {
+    Object.keys(renameFiles).forEach(key => {
+        const file = `${targetPath}/${key}`
+        if (fse.existsSync(file)) {
+            fse.renameSync(file, `${targetPath}/${renameFiles[key]}`)
+        }
+    })
+}
+async function execCmd(cmdStr, msg) {
+    const cmds = cmdStr.split(' ')
+    const cmd = cmds[0]
+    const args = cmds.slice(1)
+    const ret = await execAsync(cmd, args)
+    if (ret !== 0) {
+        log.error(msg)
+    }
+}
 function init(argv) {
     return new InitCommand(argv)
 }
